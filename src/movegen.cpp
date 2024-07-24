@@ -111,7 +111,7 @@ constexpr std::pair<std::uint64_t, int> rook_stuff[64] = {
     return result;
 }
 
-[[nodiscard]] constexpr std::array<Bitboard, 64> generate_rook_masks() {
+[[nodiscard]] constexpr std::array<Bitboard, 64> calculate_rook_masks() {
     std::array<Bitboard, 64> result = {};
     for (int i = 0; i < 64; ++i) {
         const auto sq = Square{i};
@@ -261,7 +261,7 @@ constexpr Bitboard calculate_rook_moves(const Square sq, const Bitboard blockers
 
 constexpr auto knight_masks = calculate_knight_masks();
 constexpr auto bishop_masks = calculate_bishop_masks();
-constexpr auto rook_masks = generate_rook_masks();
+constexpr auto rook_masks = calculate_rook_masks();
 constexpr auto king_masks = calculate_king_masks();
 
 std::array<std::uint64_t, 88772> generate_magic_moves() {

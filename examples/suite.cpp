@@ -138,7 +138,7 @@ int main() {
     const auto t0 = std::chrono::high_resolution_clock::now();
     for (int i = 0; i < 6; ++i) {
         for (const auto& [fen, nodes] : suite) {
-            if (i >= nodes.size()) {
+            if ((unsigned long)i >= nodes.size()) {
                 continue;
             }
 

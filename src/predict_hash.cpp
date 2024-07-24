@@ -47,8 +47,8 @@ namespace libchess {
             break;
         case MoveType::ksc:
             new_hash ^= zobrist::piece_key(Piece::King, us, move.from());
-            new_hash ^= zobrist::piece_key(Piece::King, us, castle_king_to[us * 2]);
-            new_hash ^= zobrist::piece_key(Piece::Rook, us, castle_rooks_from_[us * 2]);
+            new_hash ^= zobrist::piece_key(Piece::King, us, castle_king_to[us * 2 + 0]);
+            new_hash ^= zobrist::piece_key(Piece::Rook, us, castle_rooks_from_[us * 2 + 0]);
             new_hash ^= zobrist::piece_key(Piece::Rook, us, ksc_rook_to[us]);
             break;
         case MoveType::qsc:

@@ -133,7 +133,6 @@ void Position::set_fen(const std::string &fen, const bool dfrc) noexcept {
                     auto bb = Bitboard(wksq);
                     while (bb) {
                         bb = bb.east();
-
                         if (bb & white_rooks) {
                             castling_[0] = true;
                             castle_rooks_from_[0] = (bb & white_rooks).lsb();
@@ -143,7 +142,6 @@ void Position::set_fen(const std::string &fen, const bool dfrc) noexcept {
                     auto bb = Bitboard(wksq);
                     while (bb) {
                         bb = bb.west();
-
                         if (bb & white_rooks) {
                             castling_[1] = true;
                             castle_rooks_from_[1] = (bb & white_rooks).lsb();
@@ -153,7 +151,6 @@ void Position::set_fen(const std::string &fen, const bool dfrc) noexcept {
                     auto bb = Bitboard(bksq);
                     while (bb) {
                         bb = bb.east();
-
                         if (bb & black_rooks) {
                             castling_[2] = true;
                             castle_rooks_from_[2] = (bb & black_rooks).lsb();
@@ -163,7 +160,6 @@ void Position::set_fen(const std::string &fen, const bool dfrc) noexcept {
                     auto bb = Bitboard(bksq);
                     while (bb) {
                         bb = bb.west();
-
                         if (bb & black_rooks) {
                             castling_[3] = true;
                             castle_rooks_from_[3] = (bb & black_rooks).lsb();
@@ -207,7 +203,6 @@ void Position::set_fen(const std::string &fen, const bool dfrc) noexcept {
     hash_ = calculate_hash();
 #endif
 
-    assert(valid());
 }
 
 }  // namespace libchess

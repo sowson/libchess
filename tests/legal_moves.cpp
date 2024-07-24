@@ -25,21 +25,21 @@ TEST_CASE("Position::legal_captures()") {
 
         REQUIRE(legal_captures.size() + legal_noncaptures.size() == legal_moves.size());
 
-        const auto num_captures = std::ranges::count_if(legal_moves, [](const auto &move) {
+        const auto num_captures = std::count_if(legal_moves.begin(), legal_moves.end(), [](const auto &move) {
             return move.is_capturing();
         });
-        REQUIRE(num_captures == legal_captures.size());
+        REQUIRE(num_captures == (const long)legal_captures.size());
 
         for (const auto &move : legal_captures) {
             REQUIRE(move.is_capturing());
-            REQUIRE(std::ranges::find(legal_moves, move) != legal_moves.end());
-            REQUIRE(std::ranges::find(legal_noncaptures, move) == legal_noncaptures.end());
+            REQUIRE(num_captures == (const long)legal_captures.size());
+            REQUIRE(std::find(legal_noncaptures.begin(), legal_noncaptures.end(), move) == legal_noncaptures.end());
         }
 
         for (const auto &move : legal_noncaptures) {
             REQUIRE(!move.is_capturing());
-            REQUIRE(std::ranges::find(legal_moves, move) != legal_moves.end());
-            REQUIRE(std::ranges::find(legal_captures, move) == legal_captures.end());
+            REQUIRE(std::find(legal_moves.begin(), legal_moves.end(), move) != legal_moves.end());
+            REQUIRE(std::find(legal_captures.begin(), legal_captures.end(), move) == legal_captures.end());
         }
     }
 }
