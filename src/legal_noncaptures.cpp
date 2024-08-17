@@ -205,47 +205,56 @@ void Position::legal_noncaptures(std::vector<Move> &moves) const noexcept {
     if (us == Side::White) {
         if (!checked && can_castle(Side::White, MoveType::ksc)) {
             const auto blockers = occupied() ^ Bitboard(ksq) ^ Bitboard(castle_rooks_from_[0]);
-            const auto king_path = (squares_between(ksq, squares::G1) | Bitboard(squares::G1)) & ~Bitboard(ksq);
+            const auto king_path = (squares_between(ksq, castle_king_to[0]) | Bitboard(castle_king_to[0])) & ~Bitboard(ksq);
             const auto king_path_clear = (king_path & blockers).empty();
-            const auto rook_path = squares_between(squares::F1, castle_rooks_from_[0]) | Bitboard(squares::F1);
-            const auto rook_path_clear = (rook_path & blockers).empty() && !(rook_pinned & castle_rooks_from_[0]);
+            const auto rook_path = squares_between(castle_rooks_from_[0], ksc_rook_to[0]) | Bitboard(ksc_rook_to[0]);
+            const auto rook_path_clear = (rook_path & blockers).empty() && !(rook_pinned & ksc_rook_to[0]);
 
             if (king_path_clear && rook_path_clear && !(squares_attacked(Side::Black) & king_path)) {
-                moves.emplace_back(MoveType::ksc, ksq, castle_rooks_from_[0], Piece::King);
+                if (piece_on(castle_king_to[0]) == libchess::None && piece_on(ksc_rook_to[0]) == libchess::None) {
+                    moves.emplace_back(MoveType::ksc, ksq, castle_king_to[0], Piece::King);
+                    // moves.emplace_back(MoveType::ksc, castle_rooks_from_[0], ksc_rook_to[0], Piece::Rook);
+                }
             }
         }
         if (!checked && can_castle(Side::White, MoveType::qsc)) {
             const auto blockers = occupied() ^ Bitboard(ksq) ^ Bitboard(castle_rooks_from_[1]);
-            const auto king_path = (squares_between(ksq, squares::C1) | Bitboard(squares::C1)) & ~Bitboard(ksq);
+            const auto king_path = (squares_between(ksq, castle_king_to[1]) | Bitboard(castle_king_to[1])) & ~Bitboard(ksq);
             const auto king_path_clear = (king_path & blockers).empty();
-            const auto rook_path = squares_between(squares::D1, castle_rooks_from_[1]) | Bitboard(squares::D1);
-            const auto rook_path_clear = (rook_path & blockers).empty() && !(rook_pinned & castle_rooks_from_[1]);
+            const auto rook_path = squares_between(castle_rooks_from_[1], qsc_rook_to[0]) | Bitboard(qsc_rook_to[0]);
+            const auto rook_path_clear = (rook_path & blockers).empty() && !(rook_pinned & qsc_rook_to[0]);
 
             if (king_path_clear && rook_path_clear && !(squares_attacked(Side::Black) & king_path)) {
-                moves.emplace_back(MoveType::qsc, ksq, castle_rooks_from_[1], Piece::King);
+                if(piece_on(castle_king_to[1]) == libchess::None && piece_on(qsc_rook_to[0]) == libchess::None) {
+                    moves.emplace_back(MoveType::qsc, ksq, castle_king_to[1], Piece::King);
+                }
             }
         }
     } else {
         if (!checked && can_castle(Side::Black, MoveType::ksc)) {
             const auto blockers = occupied() ^ Bitboard(ksq) ^ Bitboard(castle_rooks_from_[2]);
-            const auto king_path = (squares_between(ksq, squares::G8) | Bitboard(squares::G8)) & ~Bitboard(ksq);
+            const auto king_path = (squares_between(ksq, castle_king_to[2]) | Bitboard(castle_king_to[2])) & ~Bitboard(ksq);
             const auto king_path_clear = (king_path & blockers).empty();
-            const auto rook_path = squares_between(squares::F8, castle_rooks_from_[2]) | Bitboard(squares::F8);
-            const auto rook_path_clear = (rook_path & blockers).empty() && !(rook_pinned & castle_rooks_from_[2]);
+            const auto rook_path = squares_between(castle_rooks_from_[2], ksc_rook_to[1]) | Bitboard(ksc_rook_to[1]);
+            const auto rook_path_clear = (rook_path & blockers).empty() && !(rook_pinned & ksc_rook_to[1]);
 
             if (king_path_clear && rook_path_clear && !(squares_attacked(Side::White) & king_path)) {
-                moves.emplace_back(MoveType::ksc, ksq, castle_rooks_from_[2], Piece::King);
+                if(piece_on(castle_king_to[2]) == libchess::None && piece_on(ksc_rook_to[1]) == libchess::None) {
+                    moves.emplace_back(MoveType::ksc, ksq, castle_king_to[2], Piece::King);
+                }
             }
         }
         if (!checked && can_castle(Side::Black, MoveType::qsc)) {
             const auto blockers = occupied() ^ Bitboard(ksq) ^ Bitboard(castle_rooks_from_[3]);
-            const auto king_path = (squares_between(ksq, squares::C8) | Bitboard(squares::C8)) & ~Bitboard(ksq);
+            const auto king_path = (squares_between(ksq, castle_king_to[3]) | Bitboard(castle_king_to[3])) & ~Bitboard(ksq);
             const auto king_path_clear = (king_path & blockers).empty();
-            const auto rook_path = squares_between(squares::D8, castle_rooks_from_[3]) | Bitboard(squares::D8);
-            const auto rook_path_clear = (rook_path & blockers).empty() && !(rook_pinned & castle_rooks_from_[3]);
+            const auto rook_path = squares_between(castle_rooks_from_[3], qsc_rook_to[1]) | Bitboard(qsc_rook_to[1]);
+            const auto rook_path_clear = (rook_path & blockers).empty() && !(rook_pinned & qsc_rook_to[1]);
 
             if (king_path_clear && rook_path_clear && !(squares_attacked(Side::White) & king_path)) {
-                moves.emplace_back(MoveType::qsc, ksq, castle_rooks_from_[3], Piece::King);
+                if (piece_on(castle_king_to[3]) == libchess::None && piece_on(qsc_rook_to[1]) == libchess::None) {
+                    moves.emplace_back(MoveType::qsc, ksq, castle_king_to[3], Piece::King);
+                }
             }
         }
     }
