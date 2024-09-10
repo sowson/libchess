@@ -89,6 +89,7 @@ void Position::legal_captures(std::vector<Move> &moves) const noexcept {
     const auto pinned_ne_sw = pinned_bishop & (ray_north_east(ksq, occupied()) | ray_south_west(ksq, occupied()));
     const auto pinned_nw_se = pinned_bishop ^ pinned_ne_sw;
 
+    const auto bishop_rays = movegen::bishop_moves(ksq, occupied());
     const auto bishop_xrays = movegen::bishop_moves(ksq, occupied() ^ pinned_bishop);
     const auto rook_xrays = movegen::rook_moves(ksq, occupied() ^ pinned_rook);
 
@@ -145,6 +146,7 @@ void Position::legal_captures(std::vector<Move> &moves) const noexcept {
 
         // En passant
         if (ep_bb) {
+            const auto bq = pieces(Side::Black, Piece::Bishop) | pieces(Side::Black, Piece::Queen);
             const auto rq = pieces(Side::Black, Piece::Rook) | pieces(Side::Black, Piece::Queen);
 
             // North west
@@ -153,6 +155,7 @@ void Position::legal_captures(std::vector<Move> &moves) const noexcept {
                 const auto east = ray_east(ksq, blockers);
                 const auto west = ray_west(ksq, blockers);
                 if (east & rq || west & rq) {
+                } else if ((bishop_rays & bq) && !(ep_bb & bishop_rays)) {
                 } else {
                     moves.emplace_back(MoveType::enpassant, ep_.south().east(), ep_, Piece::Pawn, Piece::Pawn);
                 }
@@ -163,6 +166,7 @@ void Position::legal_captures(std::vector<Move> &moves) const noexcept {
                 const auto east = ray_east(ksq, blockers);
                 const auto west = ray_west(ksq, blockers);
                 if (east & rq || west & rq) {
+                } else if ((bishop_rays & bq) && !(ep_bb & bishop_rays)) {
                 } else {
                     moves.emplace_back(MoveType::enpassant, ep_.south().west(), ep_, Piece::Pawn, Piece::Pawn);
                 }
@@ -216,24 +220,27 @@ void Position::legal_captures(std::vector<Move> &moves) const noexcept {
 
         // En passant
         if (ep_bb) {
+            const auto bq = pieces(Side::White, Piece::Bishop) | pieces(Side::White, Piece::Queen);
             const auto rq = pieces(Side::White, Piece::Rook) | pieces(Side::White, Piece::Queen);
 
             // South west
-            if (nonpromo_sw & ep_bb.north().east() & ~pinned_nw_se) {
-                const auto blockers = occupied() ^ ep_bb.north() ^ ep_bb.north().east();
+            if (pawns_sw & ep_bb.north().east()) {
+                const auto blockers = occupied() ^ ep_bb ^ ep_bb.north() ^ ep_bb.north().east();
                 const auto east = ray_east(ksq, blockers);
                 const auto west = ray_west(ksq, blockers);
                 if (east & rq || west & rq) {
+                } else if ((bishop_rays & bq) && !(ep_bb & bishop_rays)) {
                 } else {
                     moves.emplace_back(MoveType::enpassant, ep_.north().east(), ep_, Piece::Pawn, Piece::Pawn);
                 }
             }
             // South east
-            if (nonpromo_se & ep_bb.north().west() & ~pinned_ne_sw) {
-                const auto blockers = occupied() ^ ep_bb.north() ^ ep_bb.north().west();
+            if (pawns_se & ep_bb.north().west()) {
+                const auto blockers = occupied() ^ ep_bb ^ ep_bb.north() ^ ep_bb.north().west();
                 const auto east = ray_east(ksq, blockers);
                 const auto west = ray_west(ksq, blockers);
                 if (east & rq || west & rq) {
+                } else if ((bishop_rays & bq) && !(ep_bb & bishop_rays)) {
                 } else {
                     moves.emplace_back(MoveType::enpassant, ep_.north().west(), ep_, Piece::Pawn, Piece::Pawn);
                 }

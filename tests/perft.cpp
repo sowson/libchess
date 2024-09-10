@@ -86,11 +86,12 @@ TEST_CASE("En passant -- Vertical pin") {
 }
 
 TEST_CASE("En passant -- Legal") {
-    const std::array<pair_type, 4> positions = {{
+    const std::array<pair_type, 5> positions = {{
         {"8/8/8/8/1k1PpN1R/8/8/4K3 b - d3 0 1", {1, 9, 193, 1322}},
         {"8/8/8/8/1k1Ppn1R/8/8/4K3 b - d3 0 1", {1, 17, 220, 3001}},
         {"4k3/8/8/2PpP3/8/8/8/4K3 w - d6 0 1", {1, 9, 47, 376}},
         {"4k3/8/8/8/2pPp3/8/8/4K3 b - d3 0 1", {1, 9, 47, 376}},
+        {"r3k2r/p2pqpb1/bn2pnp1/2pPN3/1p2P3/2N2Q1p/PPPBBPPP/R4K1R w kq c6 0 2", {1, 46}},
     }};
 
     for (const auto &[fen, nodes] : positions) {
@@ -117,9 +118,47 @@ TEST_CASE("En passant -- Capture checker") {
     }
 }
 
-TEST_CASE("En passant -- Horizontally block check") {
-    const std::array<pair_type, 1> positions = {{
-        {"4k3/8/K6r/3pP3/8/8/8/8 w - d6 0 1", {1, 6}},
+TEST_CASE("En passant -- In check") {
+    const std::array<pair_type, 14> positions = {{
+        {"2b1k3/8/8/2Pp4/8/7K/8/8 w - - 0 1", {1, 4, 52}},
+        {"2b1k3/8/8/2Pp4/8/7K/8/8 w - d6 0 1", {1, 4, 52}},
+        {"4k3/r6K/8/2Pp4/8/8/8/8 w - - 0 1", {1, 4, 77}},
+        {"4k3/r6K/8/2Pp4/8/8/8/8 w - d6 0 1", {1, 4, 77}},
+        {"2K1k3/8/8/2Pp4/8/7b/8/8 w - - 0 1", {1, 3, 37}},
+        {"2K1k3/8/8/2Pp4/8/7b/8/8 w - d6 0 1", {1, 3, 37}},
+        {"2K1k3/8/8/2Pp4/8/7q/8/8 w - - 0 1", {1, 3, 79}},
+        {"2K1k3/8/8/2Pp4/8/7q/8/8 w - d6 0 1", {1, 3, 79}},
+        {"8/8/7k/8/2pP4/8/8/2B1K3 b - - 0 1", {1, 4, 52}},
+        {"8/8/7k/8/2pP4/8/8/2B1K3 b - d3 0 1", {1, 4, 52}},
+        {"8/8/7k/8/2pP4/8/8/2Q1K3 b - - 0 1", {1, 4, 76}},
+        {"8/8/7k/8/2pP4/8/8/2Q1K3 b - d3 0 1", {1, 4, 76}},
+        {"8/8/8/8/2pP4/8/R6k/4K3 b - - 0 1", {1, 4, 77}},
+        {"8/8/8/8/2pP4/8/R6k/4K3 b - d3 0 1", {1, 4, 77}},
+    }};
+
+    for (const auto &[fen, nodes] : positions) {
+        INFO(fen);
+        libchess::Position pos{fen};
+        for (std::size_t i = 0; i < nodes.size(); ++i) {
+            REQUIRE(pos.perft(i) == nodes[i]);
+        }
+    }
+}
+
+TEST_CASE("En passant -- Block check") {
+    const std::array<pair_type, 12> positions = {{
+        {"4k3/8/K6r/3pP3/8/8/8/8 w - d6 0 1", {1, 6, 109}},
+        {"4k3/8/K6q/3pP3/8/8/8/8 w - d6 0 1", {1, 6, 151}},
+        {"4kb2/8/8/3pP3/8/K7/8/8 w - d6 0 1", {1, 5, 55}},
+        {"4kq2/8/8/3pP3/8/K7/8/8 w - d6 0 1", {1, 5, 100}},
+        {"4k3/8/r6K/3pP3/8/8/8/8 w - d6 0 1", {1, 6, 107}},
+        {"4k3/8/q6K/3pP3/8/8/8/8 w - d6 0 1", {1, 6, 149}},
+        {"3k1K2/8/8/3pP3/8/b7/8/8 w - d6 0 1", {1, 4, 44}},
+        {"3k1K2/8/8/3pP3/8/q7/8/8 w - d6 0 1", {1, 4, 100}},
+        {"8/8/8/8/3Pp3/k6R/8/4K3 b - d3 0 1", {1, 6, 109}},
+        {"8/8/8/8/3Pp3/k6Q/8/4K3 b - d3 0 1", {1, 6, 151}},
+        {"8/8/k7/8/3Pp3/8/8/4KB2 b - d3 0 1", {1, 5, 55}},
+        {"8/8/k7/8/3Pp3/8/8/4KQ2 b - d3 0 1", {1, 5, 100}},
     }};
 
     for (const auto &[fen, nodes] : positions) {
