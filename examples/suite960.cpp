@@ -972,13 +972,13 @@ int main() {
     const auto t0 = std::chrono::high_resolution_clock::now();
     for (int i = 0; i < 6; ++i) {
         int j = 1;
-        int jmax = suite.size();
+        int jmax = (int)suite.size();
         for (const auto &[fen, nodes] : suite) {
-            if (i >= nodes.size()) {
+            if (std::size_t(i) >= nodes.size()) {
                 continue;
             }
 
-            auto pos = libchess::Position(fen, true);
+            auto pos = libchess::Position(fen);
             const auto exp = nodes[i];
             const auto got = pos.perft(i + 1);
             std::cout << "\r" << j << "/" << jmax;

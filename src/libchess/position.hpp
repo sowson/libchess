@@ -31,10 +31,12 @@ constexpr const Square castle_king_to[] = {squares::G1, squares::C1, squares::G8
 
 class Position {
    public:
+    bool DFRC = false;
+
     [[nodiscard]] Position() = default;
 
-    [[nodiscard]] explicit Position(const std::string &fen, const bool dfrc = false) {
-        set_fen(fen, dfrc);
+    [[nodiscard]] explicit Position(const std::string &fen) {
+        set_fen(fen);
     }
 
     [[nodiscard]] constexpr Side turn() const noexcept {
@@ -65,9 +67,9 @@ class Position {
         return hash_;
     }
 
-    void set_fen(const std::string &fen, const bool dfrc = false) noexcept;
+    void set_fen(const std::string &fen) noexcept;
 
-    [[nodiscard]] std::string get_fen(const bool dfrc = false) const noexcept;
+    [[nodiscard]] std::string get_fen() const noexcept;
 
     [[nodiscard]] bool is_legal(const Move &m) const noexcept;
 
@@ -369,8 +371,8 @@ class Position {
         }
     }
 
-    [[nodiscard]] auto move_string(const Move &move, const bool dfrc = false) const noexcept -> std::string {
-        if (dfrc) {
+    [[nodiscard]] auto move_string(const Move &move) const noexcept -> std::string {
+        if (DFRC) {
             return static_cast<std::string>(move);
         } else if (move.type() == MoveType::ksc) {
             if (turn() == Side::White) {
@@ -421,31 +423,31 @@ inline std::ostream &operator<<(std::ostream &os, const Position &pos) noexcept 
         const auto sq = Square(i);
         const auto bb = Bitboard{sq};
         if (pos.pieces(Side::White, Piece::Pawn) & bb) {
-            os << 'P';
+            os << " ♟ ";
         } else if (pos.pieces(Side::White, Piece::Knight) & bb) {
-            os << 'N';
+            os << " ♞ ";
         } else if (pos.pieces(Side::White, Piece::Bishop) & bb) {
-            os << 'B';
+            os << " ♝ ";
         } else if (pos.pieces(Side::White, Piece::Rook) & bb) {
-            os << 'R';
+            os << " ♜ ";
         } else if (pos.pieces(Side::White, Piece::Queen) & bb) {
-            os << 'Q';
+            os << " ♛ ";
         } else if (pos.pieces(Side::White, Piece::King) & bb) {
-            os << 'K';
+            os << " ♚ ";
         } else if (pos.pieces(Side::Black, Piece::Pawn) & bb) {
-            os << 'p';
+            os << " ♙ ";
         } else if (pos.pieces(Side::Black, Piece::Knight) & bb) {
-            os << 'n';
+            os << " ♘ ";
         } else if (pos.pieces(Side::Black, Piece::Bishop) & bb) {
-            os << 'b';
+            os << " ♗ ";
         } else if (pos.pieces(Side::Black, Piece::Rook) & bb) {
-            os << 'r';
+            os << " ♖ ";
         } else if (pos.pieces(Side::Black, Piece::Queen) & bb) {
-            os << 'q';
+            os << " ♕ ";
         } else if (pos.pieces(Side::Black, Piece::King) & bb) {
-            os << 'k';
+            os << " ♔ ";
         } else {
-            os << '-';
+            os << " · ";
         }
 
         if (i % 8 == 7) {

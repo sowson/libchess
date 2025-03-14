@@ -49,10 +49,10 @@ namespace libchess {
     return pos.turn() == Side::White ? "w" : "b";
 }
 
-[[nodiscard]] std::string fen_castling(const Position &pos, const bool dfrc) noexcept {
+[[nodiscard]] std::string fen_castling(const Position &pos) noexcept {
     std::string part;
 
-    if (dfrc) {
+    if (pos.DFRC) {
         if (pos.can_castle(Side::White, MoveType::ksc)) {
             const auto sq = pos.get_castling_square(Side::White, MoveType::ksc);
             part += 'A' + sq.file();
@@ -107,10 +107,10 @@ namespace libchess {
     return std::to_string(pos.fullmoves());
 }
 
-[[nodiscard]] std::string Position::get_fen(const bool dfrc) const noexcept {
+[[nodiscard]] std::string Position::get_fen() const noexcept {
     std::string fen = fen_pieces(*this);
     fen += " " + fen_side(*this);
-    fen += " " + fen_castling(*this, dfrc);
+    fen += " " + fen_castling(*this);
     fen += " " + fen_enpassant(*this);
     fen += " " + fen_halfmoves(*this);
     fen += " " + fen_fullmoves(*this);

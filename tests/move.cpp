@@ -44,17 +44,16 @@ TEST_CASE("Move strings") {
 TEST_CASE("Move strings DFRC") {
     using pair_type = std::pair<std::string, std::string>;
 
-    const std::array<pair_type, 20> tests = {{
+    const std::array<pair_type, 28> tests = {{
         // Castling
-     // King can moves only 2 pieces first time!
-     // {"r3k2r/8/8/8/8/8/8/R3K2R w KQkq - 0 1", "e1h1"},
-     // {"r3k2r/8/8/8/8/8/8/R3K2R w KQkq - 0 1", "e1a1"},
-     // {"r3k2r/8/8/8/8/8/8/R3K2R b KQkq - 0 1", "e8h8"},
-     // {"r3k2r/8/8/8/8/8/8/R3K2R b KQkq - 0 1", "e8a8"},
-     // {"r3k2r/8/8/8/8/8/8/R3K2R w HAha - 0 1", "e1h1"},
-     // {"r3k2r/8/8/8/8/8/8/R3K2R w HAha - 0 1", "e1a1"},
-     // {"r3k2r/8/8/8/8/8/8/R3K2R b HAha - 0 1", "e8h8"},
-     // {"r3k2r/8/8/8/8/8/8/R3K2R b HAha - 0 1", "e8a8"},
+        {"r3k2r/8/8/8/8/8/8/R3K2R w KQkq - 0 1", "e1h1"},
+        {"r3k2r/8/8/8/8/8/8/R3K2R w KQkq - 0 1", "e1a1"},
+        {"r3k2r/8/8/8/8/8/8/R3K2R b KQkq - 0 1", "e8h8"},
+        {"r3k2r/8/8/8/8/8/8/R3K2R b KQkq - 0 1", "e8a8"},
+        {"r3k2r/8/8/8/8/8/8/R3K2R w HAha - 0 1", "e1h1"},
+        {"r3k2r/8/8/8/8/8/8/R3K2R w HAha - 0 1", "e1a1"},
+        {"r3k2r/8/8/8/8/8/8/R3K2R b HAha - 0 1", "e8h8"},
+        {"r3k2r/8/8/8/8/8/8/R3K2R b HAha - 0 1", "e8a8"},
         // Others
         {"r3k2r/8/8/8/8/8/8/R3K2R w KQkq - 0 1", "e1d1"},
         {"r3k2r/8/8/8/8/8/8/R3K2R w KQkq - 0 1", "e1d2"},
@@ -79,12 +78,12 @@ TEST_CASE("Move strings DFRC") {
     }};
 
     for (const auto &[fen, movestr] : tests) {
-        const auto pos = libchess::Position{fen, true};
+        const auto pos = libchess::Position{fen};
         const auto moves = pos.legal_moves();
 
         auto found = false;
         for (const auto &move : moves) {
-            const auto str = pos.move_string(move, true);
+            const auto str = pos.move_string(move);
 
             REQUIRE(str == static_cast<std::string>(move));
 
@@ -93,7 +92,6 @@ TEST_CASE("Move strings DFRC") {
             }
         }
 
-        if (!found) REQUIRE(movestr == "");
         REQUIRE(found);
     }
 }

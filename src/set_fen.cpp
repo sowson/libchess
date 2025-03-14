@@ -1,10 +1,11 @@
 #include <cassert>
 #include <sstream>
+#include <regex>
 #include "libchess/position.hpp"
 
 namespace libchess {
 
-void Position::set_fen(const std::string &fen, const bool dfrc) noexcept {
+void Position::set_fen(const std::string &fen) noexcept {
     if (fen == "startpos") {
         set_fen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
         return;
@@ -95,6 +96,10 @@ void Position::set_fen(const std::string &fen, const bool dfrc) noexcept {
 
     // Castling perms
     ss >> word;
+
+    std::regex pattern("[ABCDEFGHabcdefgh]");
+    DFRC = std::regex_search(word, pattern);
+
     if (word != "-") {
         const auto wksq = king_position(Side::White);
         const auto bksq = king_position(Side::Black);
@@ -102,7 +107,7 @@ void Position::set_fen(const std::string &fen, const bool dfrc) noexcept {
         const auto black_rooks = pieces(Side::Black, libchess::Rook);
 
         for (const auto &c : word) {
-            if (dfrc) {
+            if (DFRC) {
                 // White
                 if ('A' <= c && c <= 'H') {
                     const auto sq = Square(c - 'A');
