@@ -49,7 +49,7 @@ class Move {
 
 #ifndef NDEBUG
         assert(piece() != Piece::None);
-        assert(to() != from());
+        //assert(to() != from()); // castling!
         assert(_t == type());
         assert(_fr == from());
         assert(_to == to());
@@ -78,12 +78,12 @@ class Move {
                 assert(promotion() == Piece::None);
                 break;
             case MoveType::ksc:
-                assert(piece() == Piece::King);
+                assert(piece() == Piece::King || piece() == Piece::Rook);
                 assert(captured() == Piece::None);
                 assert(promotion() == Piece::None);
                 break;
             case MoveType::qsc:
-                assert(piece() == Piece::King);
+                assert(piece() == Piece::King || piece() == Piece::Rook);
                 assert(captured() == Piece::None);
                 assert(promotion() == Piece::None);
                 break;

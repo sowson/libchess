@@ -127,63 +127,65 @@ void Position::makemove(const Move &move) noexcept {
             }
             break;
         case MoveType::ksc:
-            assert(piece_on(move.from()) == Piece::King);
-            assert(piece_on(move.to()) == Piece::Rook);
-            colours_[us] ^= Bitboard(move.from()) ^ Bitboard(castle_king_to[us * 2]);
-            pieces_[piece] ^= Bitboard(move.from()) ^ Bitboard(castle_king_to[us * 2]);
+            assert(piece_on(move.from()) == Piece::King || piece_on(move.from()) == Piece::Rook);
+            if (piece_on(move.from()) == Piece::King) assert(piece_on(move.to()) == Piece::None);
+            colours_[us] ^= Bitboard(move.from()) ^ Bitboard(castle_king_to[us * 2 + 0]);
+            pieces_[piece] ^= Bitboard(move.from()) ^ Bitboard(castle_king_to[us * 2 + 0]);
 
 #ifndef NO_HASH
-            hash_ ^= zobrist::piece_key(piece, us, move.from());
-            hash_ ^= zobrist::piece_key(piece, us, castle_king_to[us * 2]);
-            hash_ ^= zobrist::piece_key(Piece::Rook, us, castle_rooks_from_[us * 2]);
+            hash_ ^= zobrist::piece_key(Piece::King, us, move.from());
+            hash_ ^= zobrist::piece_key(Piece::King, us, castle_king_to[us * 2 + 0]);
+            hash_ ^= zobrist::piece_key(Piece::Rook, us, castle_rooks_from_[us * 2 + 0]);
             hash_ ^= zobrist::piece_key(Piece::Rook, us, ksc_rook_to[us]);
 #endif
 
             // Remove the rook
-            colours_[us] ^= castle_rooks_from_[us * 2];
-            pieces_[Piece::Rook] ^= castle_rooks_from_[us * 2];
+            colours_[us] ^= castle_rooks_from_[us * 2 + 0];
+            pieces_[Piece::Rook] ^= castle_rooks_from_[us * 2 + 0];
             // Add the rook
             colours_[us] ^= ksc_rook_to[us];
             pieces_[Piece::Rook] ^= ksc_rook_to[us];
 
-            assert(piece == Piece::King);
+            assert(piece == Piece::King || piece == Piece::Rook);
             assert(captured == Piece::None);
             assert(promo == Piece::None);
             assert(can_castle(us, MoveType::ksc));
-            assert(move.to() == castle_rooks_from_[us * 2]);
+            assert(move.to() == castle_king_to[us * 2] || move.to() == ksc_rook_to[us]);
 
             // No overlap between any pieces and the path of the king, exclude the castling rook
             assert(!(occupied() & squares_between(from, castle_king_to[us * 2]) & ~Bitboard(ksc_rook_to[us])));
             // No overlap between any pieces and the path of the rook, exclude the castled king
-            assert(
+            if (piece == Piece::King) assert(
                 !(occupied() & squares_between(castle_rooks_from_[us * 2], ksc_rook_to[us]) & ~occupancy(Piece::King)));
 
             // Check if rook is at destination
             assert(piece_on(ksc_rook_to[us]) == Piece::Rook);
             // Check that king is on its destination square
-            assert(piece_on(castle_king_to[us * 2]) == Piece::King);
+            if (piece == Piece::King) assert(piece_on(castle_king_to[us * 2]) == Piece::King);
+            if (piece == Piece::King) assert(castle_king_to[us * 2] == pieces(us, Piece::King).lsb());
 
-            // Start square of king is either empty, its own, or the rook's target square
-            assert(piece_on(from) == Piece::None || from == ksc_rook_to[us] || from == castle_king_to[us * 2]);
             // Start square of rook is either empty, its own, or the king's target square
-            assert(piece_on(castle_rooks_from_[us * 2]) == Piece::None ||
+            if (piece == Piece::King) assert(piece_on(castle_rooks_from_[us * 2]) == Piece::None ||
                    castle_rooks_from_[us * 2] == ksc_rook_to[us] ||
                    castle_rooks_from_[us * 2] == castle_king_to[us * 2]);
 
+            // Start square of king is either empty, its own, or the rook's target square
+            if (piece == Piece::King) assert(piece_on(from) == Piece::None || from == ksc_rook_to[us] || from == castle_king_to[us * 2]);
+
             // Check if all squares touched by king are not attacked
-            assert(!(squares_attacked(them) &
+            if (piece == Piece::King) assert(!(squares_attacked(them) &
                      (squares_between(from, castle_king_to[us * 2]) | from | pieces(us, Piece::King))));
 
             break;
         case MoveType::qsc:
-            assert(piece_on(move.from()) == Piece::King);
-            assert(piece_on(move.to()) == Piece::Rook);
+            assert(piece_on(move.from()) == Piece::King || piece_on(move.from()) == Piece::Rook);
+            if (piece_on(move.from()) == Piece::King) assert(piece_on(move.to()) == Piece::None);
             colours_[us] ^= Bitboard(move.from()) ^ Bitboard(castle_king_to[us * 2 + 1]);
             pieces_[piece] ^= Bitboard(move.from()) ^ Bitboard(castle_king_to[us * 2 + 1]);
 
 #ifndef NO_HASH
-            hash_ ^= zobrist::piece_key(piece, us, move.from());
-            hash_ ^= zobrist::piece_key(piece, us, castle_king_to[us * 2 + 1]);
+            hash_ ^= zobrist::piece_key(Piece::King, us, move.from());
+            hash_ ^= zobrist::piece_key(Piece::King, us, castle_king_to[us * 2 + 1]);
             hash_ ^= zobrist::piece_key(Piece::Rook, us, castle_rooks_from_[us * 2 + 1]);
             hash_ ^= zobrist::piece_key(Piece::Rook, us, qsc_rook_to[us]);
 #endif
@@ -194,32 +196,35 @@ void Position::makemove(const Move &move) noexcept {
             // Add the rook
             colours_[us] ^= qsc_rook_to[us];
             pieces_[Piece::Rook] ^= qsc_rook_to[us];
-            assert(piece == Piece::King);
+
+            assert(piece == Piece::King || piece == Piece::Rook);
             assert(captured == Piece::None);
             assert(promo == Piece::None);
             assert(can_castle(us, MoveType::qsc));
-            assert(move.to() == castle_rooks_from_[us * 2 + 1]);
+            assert(move.to() == castle_king_to[us * 2 + 1] || move.to() == qsc_rook_to[us]);
+
             // No overlap between any pieces and the path of the king, exclude the castling rook
             assert(!(occupied() & squares_between(from, castle_king_to[us * 2 + 1]) & ~Bitboard(qsc_rook_to[us])));
             // No overlap between any pieces and the path of the rook, exclude the castled king
-            assert(!(occupied() & squares_between(castle_rooks_from_[us * 2 + 1], qsc_rook_to[us]) &
+            if (piece == Piece::King) assert(!(occupied() & squares_between(castle_rooks_from_[us * 2 + 1], qsc_rook_to[us]) &
                      ~occupancy(Piece::King)));
 
             // Check if rook is at destination
             assert(piece_on(qsc_rook_to[us]) == Piece::Rook);
             // Check that king is on its destination square
-            assert(piece_on(castle_king_to[us * 2 + 1]) == Piece::King);
-            assert(castle_king_to[us * 2 + 1] == pieces(us, Piece::King).hsb());
+            if (piece == Piece::King) assert(piece_on(castle_king_to[us * 2 + 1]) == Piece::King);
+            if (piece == Piece::King) assert(castle_king_to[us * 2 + 1] == pieces(us, Piece::King).lsb());
 
             // Start square of rook is either empty, its own, or the king's target square
-            assert(piece_on(castle_rooks_from_[us * 2 + 1]) == Piece::None ||
+            if (piece == Piece::King) assert(piece_on(castle_rooks_from_[us * 2 + 1]) == Piece::None ||
                    castle_rooks_from_[us * 2 + 1] == qsc_rook_to[us] ||
                    castle_rooks_from_[us * 2 + 1] == castle_king_to[us * 2 + 1]);
+
             // Start square of king is either empty, its own, or the rook's target square
-            assert(piece_on(from) == Piece::None || from == qsc_rook_to[us] || from == castle_king_to[us * 2 + 1]);
+            if (piece == Piece::King) assert(piece_on(from) == Piece::None || from == qsc_rook_to[us] || from == castle_king_to[us * 2 + 1]);
 
             // Check if all squares touched by king are not attacked
-            assert(!(squares_attacked(them) &
+            if (piece == Piece::King) assert(!(squares_attacked(them) &
                      (squares_between(from, castle_king_to[us * 2 + 1]) | from | pieces(us, Piece::King))));
 
             break;

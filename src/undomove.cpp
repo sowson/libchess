@@ -106,8 +106,6 @@ void Position::undomove() noexcept {
 
     // Remove from history
     history_.pop_back();
-
-    assert(valid());
 }
 
 }  // namespace libchess

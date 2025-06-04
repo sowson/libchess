@@ -4,12 +4,13 @@
 #include "catch.hpp"
 
 TEST_CASE("Position::is_checkmate() true") {
-    const std::array<std::string, 5> tests = {{
+    const std::array<std::string, 6> tests = {{
         "8/8/8/8/8/3k4/8/3K1r2 w - - 1 2",
         "1k1R4/8/1K6/8/8/8/8/8 b - - 0 1",
         "3k1R2/8/3K4/8/8/8/8/8 b - - 1 1",
         "6k1/r2n1ppp/5n2/6K1/2PQr1q1/6P1/PP5P/RbB4R w - - 13 28",
         "8/7k/2p2bp1/1p5p/pPPqpP1P/P3K1P1/4Q3/4B3 w - - 2 48",
+        "1k1r3r/p6p/4N3/3p4/1bb5/8/PP1q2PP/R2K3R w - - 4 20"
     }};
 
     for (const auto &fen : tests) {
