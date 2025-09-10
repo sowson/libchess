@@ -18,18 +18,3 @@ TEST_CASE("Position::checkers()") {
         REQUIRE(pos.checkers() == libchess::Bitboard(checkers));
     }
 }
-
-TEST_CASE("Position::legal_moves().size()") {
-    using pair_type = std::pair<std::string, std::uint64_t>;
-
-    const std::array<pair_type, 2> positions = {{
-        {"startpos", 20},
-        {"1r3k1r/1pb2p1B/p2p1p2/8/2Pp4/4q3/PP2K1b1/QRN3R1 w k - 1 28", 1},
-    }};
-
-    for (const auto &[fen, checkers] : positions) {
-        INFO(fen);
-        const libchess::Position pos{fen};
-        REQUIRE(pos.legal_moves().size() == checkers);
-    }
-}

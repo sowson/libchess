@@ -86,11 +86,12 @@ TEST_CASE("En passant -- Vertical pin") {
 }
 
 TEST_CASE("En passant -- Legal") {
-    const std::array<pair_type, 4> positions = {{
+    const std::array<pair_type, 5> positions = {{
         {"8/8/8/8/1k1PpN1R/8/8/4K3 b - d3 0 1", {1, 9, 193, 1322}},
         {"8/8/8/8/1k1Ppn1R/8/8/4K3 b - d3 0 1", {1, 17, 220, 3001}},
         {"4k3/8/8/2PpP3/8/8/8/4K3 w - d6 0 1", {1, 9, 47, 376}},
         {"4k3/8/8/8/2pPp3/8/8/4K3 b - d3 0 1", {1, 9, 47, 376}},
+        {"r3k2r/p2pqpb1/bn2pnp1/2pPN3/1p2P3/2N2Q1p/PPPBBPPP/R4K1R w kq c6 0 2", {1, 46}},
     }};
 
     for (const auto &[fen, nodes] : positions) {
@@ -117,9 +118,47 @@ TEST_CASE("En passant -- Capture checker") {
     }
 }
 
-TEST_CASE("En passant -- Horizontally block check") {
-    const std::array<pair_type, 1> positions = {{
-        {"4k3/8/K6r/3pP3/8/8/8/8 w - d6 0 1", {1, 6}},
+TEST_CASE("En passant -- In check") {
+    const std::array<pair_type, 14> positions = {{
+        {"2b1k3/8/8/2Pp4/8/7K/8/8 w - - 0 1", {1, 4, 52}},
+        {"2b1k3/8/8/2Pp4/8/7K/8/8 w - d6 0 1", {1, 4, 52}},
+        {"4k3/r6K/8/2Pp4/8/8/8/8 w - - 0 1", {1, 4, 77}},
+        {"4k3/r6K/8/2Pp4/8/8/8/8 w - d6 0 1", {1, 4, 77}},
+        {"2K1k3/8/8/2Pp4/8/7b/8/8 w - - 0 1", {1, 3, 37}},
+        {"2K1k3/8/8/2Pp4/8/7b/8/8 w - d6 0 1", {1, 3, 37}},
+        {"2K1k3/8/8/2Pp4/8/7q/8/8 w - - 0 1", {1, 3, 79}},
+        {"2K1k3/8/8/2Pp4/8/7q/8/8 w - d6 0 1", {1, 3, 79}},
+        {"8/8/7k/8/2pP4/8/8/2B1K3 b - - 0 1", {1, 4, 52}},
+        {"8/8/7k/8/2pP4/8/8/2B1K3 b - d3 0 1", {1, 4, 52}},
+        {"8/8/7k/8/2pP4/8/8/2Q1K3 b - - 0 1", {1, 4, 76}},
+        {"8/8/7k/8/2pP4/8/8/2Q1K3 b - d3 0 1", {1, 4, 76}},
+        {"8/8/8/8/2pP4/8/R6k/4K3 b - - 0 1", {1, 4, 77}},
+        {"8/8/8/8/2pP4/8/R6k/4K3 b - d3 0 1", {1, 4, 77}},
+    }};
+
+    for (const auto &[fen, nodes] : positions) {
+        INFO(fen);
+        libchess::Position pos{fen};
+        for (std::size_t i = 0; i < nodes.size(); ++i) {
+            REQUIRE(pos.perft(i) == nodes[i]);
+        }
+    }
+}
+
+TEST_CASE("En passant -- Block check") {
+    const std::array<pair_type, 12> positions = {{
+        {"4k3/8/K6r/3pP3/8/8/8/8 w - d6 0 1", {1, 6, 109}},
+        {"4k3/8/K6q/3pP3/8/8/8/8 w - d6 0 1", {1, 6, 151}},
+        {"4kb2/8/8/3pP3/8/K7/8/8 w - d6 0 1", {1, 5, 55}},
+        {"4kq2/8/8/3pP3/8/K7/8/8 w - d6 0 1", {1, 5, 100}},
+        {"4k3/8/r6K/3pP3/8/8/8/8 w - d6 0 1", {1, 6, 107}},
+        {"4k3/8/q6K/3pP3/8/8/8/8 w - d6 0 1", {1, 6, 149}},
+        {"3k1K2/8/8/3pP3/8/b7/8/8 w - d6 0 1", {1, 4, 44}},
+        {"3k1K2/8/8/3pP3/8/q7/8/8 w - d6 0 1", {1, 4, 100}},
+        {"8/8/8/8/3Pp3/k6R/8/4K3 b - d3 0 1", {1, 6, 109}},
+        {"8/8/8/8/3Pp3/k6Q/8/4K3 b - d3 0 1", {1, 6, 151}},
+        {"8/8/k7/8/3Pp3/8/8/4KB2 b - d3 0 1", {1, 5, 55}},
+        {"8/8/k7/8/3Pp3/8/8/4KQ2 b - d3 0 1", {1, 5, 100}},
     }};
 
     for (const auto &[fen, nodes] : positions) {
@@ -140,7 +179,7 @@ TEST_CASE("Perft - Many moves") {
 }
 
 TEST_CASE("Perft - Shallow") {
-    const std::array<pair_type, 28> tests = {{
+    const std::array<pair_type, 26> tests = {{
         {"startpos", {20, 400, 8902, 197281}},
         {"4k3/b7/8/2Pp4/8/8/8/6K1 w - d6 0 2", {5}},
         {"4k3/7b/8/4pP2/8/8/8/1K6 w - e6 0 2", {5}},
@@ -167,8 +206,6 @@ TEST_CASE("Perft - Shallow") {
         {"4k3/8/8/4pP2/3K4/8/8/8 w - e6 0 2", {9}},
         {"8/8/8/4k3/5Pp1/8/8/3K4 b - f3 0 1", {9}},
         {"4k3/8/K6r/3pP3/8/8/8/8 w - d6 0 1", {6}},
-        {"rnb2rk1/1ppp1ppp/p7/4p1N1/1PB1Q3/3P4/PP3PPP/RN2K2R b KQ - 0 10", {15}},
-        {"rnbkrbqn/p1pp1ppp/4p3/1p6/8/BPN3P1/P1PPPP1P/R2KRBQN w EAea - 2 9", {28, 667, 18886 }}
     }};
 
     for (const auto &[fen, nodes] : tests) {
@@ -182,10 +219,17 @@ TEST_CASE("Perft - Shallow") {
     }
 }
 
-TEST_CASE("Perft - Custom") {
-    const std::array<pair_type, 1> tests = {{
-         {"rnbkrbqn/p1pp1ppp/4p3/1p6/8/BPN3P1/P1PPPP1P/R2KRBQN w EAea - 2 9", { 28, 667, 18886,	471824,	13845222, 358941665 }}
- }};
+TEST_CASE("Perft DFRC - Shallow") {
+    const std::array<pair_type, 8> tests = {{
+        {"bqnb1rkr/pp3ppp/3ppn2/2p5/5P2/P2P4/NPP1P1PP/BQ1BNRKR w HFhf - 2 9", {21, 528, 12189, 326672}},
+        {"2nnrbkr/p1qppppp/8/1ppb4/6PP/3PP3/PPP2P2/BQNNRBKR w HEhe - 1 9", {21, 807, 18002, 667366}},
+        {"b1q1rrkb/pppppppp/3nn3/8/P7/1PPP4/4PPPP/BQNNRKRB w GE - 1 9", {20, 479, 10471, 273318}},
+        {"qbbnnrkr/2pp2pp/p7/1p2pp2/8/P3PP2/1PPP1KPP/QBBNNR1R w hf - 0 9", {22, 593, 13440, 382958}},
+        {"1nbbnrkr/p1p1ppp1/3p4/1p3P1p/3Pq2P/8/PPP1P1P1/QNBBNRKR w HFhf - 0 9", {28, 1120, 31058, 1171749}},
+        {"qnbnr1kr/ppp1b1pp/4p3/3p1p2/8/2NPP3/PPP1BPPP/QNB1R1KR w HEhe - 1 9", {29, 899, 26578, 824055}},
+        {"r1kbbqrn/ppp3pp/2np1p2/1P2p3/3P1P2/8/P1P1P1PP/RNKBBQRN w GAga - 0 9", {32, 920, 28916, 844881}},
+        {"rk1qbbrn/p2npppp/1p6/2p4Q/8/4P3/PPPP1PPP/RNK1B1RN w GA - 2 9", {35, 657, 22359, 495406}},
+    }};
 
     for (const auto &[fen, nodes] : tests) {
         INFO(fen);

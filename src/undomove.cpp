@@ -66,12 +66,12 @@ void Position::undomove() noexcept {
             // Remove the king from its castled to square
             colours_[us] ^= castle_king_to[us * 2];
             pieces_[piece] ^= castle_king_to[us * 2];
-            // Remove the rook
+            // Add the rook
             colours_[us] ^= castle_rooks_from_[us * 2];
             pieces_[Piece::Rook] ^= castle_rooks_from_[us * 2];
-            // Add the rook
-            colours_[us] ^= ksc_rook_to[us];
-            pieces_[Piece::Rook] ^= ksc_rook_to[us];
+            // Remove the rook from its after castling square
+            colours_[us] ^= castle_rook_to[us * 2];
+            pieces_[Piece::Rook] ^= castle_rook_to[us * 2];
             break;
         case MoveType::qsc:
             // Remove the king that was added instead of removed
@@ -84,8 +84,8 @@ void Position::undomove() noexcept {
             colours_[us] ^= castle_rooks_from_[us * 2 + 1];
             pieces_[Piece::Rook] ^= castle_rooks_from_[us * 2 + 1];
             // Add the rook
-            colours_[us] ^= qsc_rook_to[us];
-            pieces_[Piece::Rook] ^= qsc_rook_to[us];
+            colours_[us] ^= castle_rook_to[us * 2 + 1];
+            pieces_[Piece::Rook] ^= castle_rook_to[us * 2 + 1];
             break;
         case MoveType::promo:
             // Replace piece with pawn
@@ -106,6 +106,8 @@ void Position::undomove() noexcept {
 
     // Remove from history
     history_.pop_back();
+
+    assert(valid());
 }
 
 }  // namespace libchess

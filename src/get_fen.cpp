@@ -52,17 +52,42 @@ namespace libchess {
 [[nodiscard]] std::string fen_castling(const Position &pos) noexcept {
     std::string part;
 
-    if (pos.can_castle(Side::White, MoveType::ksc)) {
-        part += "K";
+    if (pos.NONC) {
+        return "-";
     }
-    if (pos.can_castle(Side::White, MoveType::qsc)) {
-        part += "Q";
+
+    if (pos.CFEN) {
+        if (pos.can_castle(Side::White, MoveType::ksc)) {
+            part += "K";
+        }
+        if (pos.can_castle(Side::White, MoveType::qsc)) {
+            part += "Q";
+        }
+        if (pos.can_castle(Side::Black, MoveType::ksc)) {
+            part += "k";
+        }
+        if (pos.can_castle(Side::Black, MoveType::qsc)) {
+            part += "q";
+        }
     }
-    if (pos.can_castle(Side::Black, MoveType::ksc)) {
-        part += "k";
-    }
-    if (pos.can_castle(Side::Black, MoveType::qsc)) {
-        part += "q";
+
+    if (pos.XFEN) {
+        if (pos.can_castle(Side::White, MoveType::ksc)) {
+            const auto sq = pos.get_castling_square(Side::White, MoveType::ksc);
+            part += 'A' + sq.file();
+        }
+        if (pos.can_castle(Side::White, MoveType::qsc)) {
+            const auto sq = pos.get_castling_square(Side::White, MoveType::qsc);
+            part += 'A' + sq.file();
+        }
+        if (pos.can_castle(Side::Black, MoveType::ksc)) {
+            const auto sq = pos.get_castling_square(Side::Black, MoveType::ksc);
+            part += 'a' + sq.file();
+        }
+        if (pos.can_castle(Side::Black, MoveType::qsc)) {
+            const auto sq = pos.get_castling_square(Side::Black, MoveType::qsc);
+            part += 'a' + sq.file();
+        }
     }
 
     if (part.empty()) {

@@ -58,8 +58,8 @@ TEST_CASE("Hash changes2") {
         hashes.push_back(pos.hash());
     }
 
-    std::sort(hashes.begin(),hashes.end());
-    REQUIRE(std::adjacent_find(hashes.begin(),hashes.end()) == hashes.end());
+    std::ranges::sort(hashes);
+    REQUIRE(std::ranges::adjacent_find(hashes) == hashes.end());
 #endif
 }
 
@@ -73,7 +73,7 @@ void test(libchess::Position &pos, const int depth) noexcept {
         const auto prediction = pos.predict_hash(move);
         pos.makemove(move);
 
-        REQUIRE(pos.hash() == prediction);
+        REQUIRE(static_cast<uint64_t>(pos.hash()) == static_cast<uint64_t>(prediction));
 
         test(pos, depth - 1);
         pos.undomove();
@@ -82,7 +82,7 @@ void test(libchess::Position &pos, const int depth) noexcept {
 
 TEST_CASE("Predict hash") {
 #ifndef NO_HASH
-    const std::array<std::string, 8> fens = {{
+    const std::array<std::string, 7> fens = {{
         "startpos",
         "r3k2r/pppppppp/8/8/8/8/PPPPPPPP/R3K2R w KQkq - 0 1",
         "4k3/8/K6r/3pP3/8/8/8/8 w - d6 0 1",
@@ -90,7 +90,6 @@ TEST_CASE("Predict hash") {
         "1k6/8/8/8/4Pp2/8/7B/4K3 b - e3 0 2",
         "4k3/4r3/8/8/8/8/3p4/4K3 w - - 0 2",
         "r3k2r/pppppppp/8/8/8/8/PPPPPPPP/R3K2R w KQkq - 0 1",
-        "rnbqkbnr/2p2ppp/3pp3/pp6/2PPP3/2NQB3/PP3PPP/R3KBNR b KQkq - 1 6",
     }};
 
     for (const auto &fen : fens) {

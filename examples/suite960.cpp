@@ -974,7 +974,7 @@ int main() {
         int j = 1;
         int jmax = suite.size();
         for (const auto &[fen, nodes] : suite) {
-            if ((unsigned long)i >= nodes.size()) {
+            if (static_cast<size_t>(i) >= static_cast<size_t>(nodes.size())) {
                 continue;
             }
 
