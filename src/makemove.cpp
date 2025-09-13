@@ -128,7 +128,7 @@ void Position::makemove(const Move &move) noexcept {
             break;
         case MoveType::ksc:
                 assert(piece_on(move.from()) == Piece::King);
-                assert(piece_on(move.to()) == Piece::Rook);
+                assert(piece_on(move.to()) == XFEN ? Piece::Rook : Piece::None);
                 colours_[us] ^= Bitboard(move.from()) ^ Bitboard(castle_king_to[us * 2]);
                 pieces_[piece] ^= Bitboard(move.from()) ^ Bitboard(castle_king_to[us * 2]);
 
@@ -150,7 +150,7 @@ void Position::makemove(const Move &move) noexcept {
                 assert(captured == Piece::None);
                 assert(promo == Piece::None);
                 assert(can_castle(us, MoveType::ksc));
-                 assert(move.to() == castle_rooks_from_[us * 2]);
+                 assert(move.to() == (XFEN ? castle_rooks_from_[us * 2] : castle_king_to[us * 2]));
 
                 // No overlap between any pieces and the path of the king, exclude the castling rook
                 assert(!(occupied() & squares_between(from, castle_king_to[us * 2]) & ~Bitboard(castle_rook_to[us * 2])));
@@ -176,7 +176,7 @@ void Position::makemove(const Move &move) noexcept {
             break;
         case MoveType::qsc:
                 assert(piece_on(move.from()) == Piece::King);
-                assert(piece_on(move.to()) == Piece::Rook);
+                assert(piece_on(move.to()) == XFEN ? Piece::Rook : Piece::None);
                 colours_[us] ^= Bitboard(move.from()) ^ Bitboard(castle_king_to[us * 2 + 1]);
                 pieces_[piece] ^= Bitboard(move.from()) ^ Bitboard(castle_king_to[us * 2 + 1]);
 
@@ -198,7 +198,7 @@ void Position::makemove(const Move &move) noexcept {
                 assert(captured == Piece::None);
                 assert(promo == Piece::None);
                 assert(can_castle(us, MoveType::qsc));
-                assert(move.to() == castle_rooks_from_[us * 2 + 1]);
+                assert(move.to() == (XFEN ? castle_rooks_from_[us * 2 + 1] : castle_king_to[us * 2 + 1]));
 
                 // No overlap between any pieces and the path of the king, exclude the castling rook
                 assert(!(occupied() & squares_between(from, castle_king_to[us * 2 + 1]) & ~Bitboard(castle_rook_to[us * 2 + 1])));
@@ -214,7 +214,10 @@ void Position::makemove(const Move &move) noexcept {
                 assert(castle_king_to[us * 2 + 1] == pieces(us, Piece::King).hsb());
 
                 // Start square of rook is either empty, its own, or the king's target square
-                assert(piece_on(castle_rooks_from_[us * 2 + 1]) == Piece::None || castle_rooks_from_[us * 2 + 1] == castle_rook_to[us * 2 + 1] || castle_rooks_from_[us * 2 + 1] == castle_king_to[us * 2 + 1]);
+                assert(piece_on(castle_rooks_from_[us * 2 + 1]) == Piece::None ||
+                    castle_rooks_from_[us * 2 + 1] == castle_rook_to[us * 2 + 1] ||
+                    castle_rooks_from_[us * 2 + 1] == castle_king_to[us * 2 + 1]);
+
                 // Start square of king is either empty, its own, or the rook's target square
                 assert(piece_on(from) == Piece::None || from == castle_rook_to[us * 2 + 1] || from == castle_king_to[us * 2 + 1]);
 

@@ -211,7 +211,12 @@ void Position::legal_noncaptures(std::vector<Move> &moves) const noexcept {
             const auto rook_path_clear = (rook_path & blockers).empty() && !(rook_pinned & castle_rooks_from_[0]);
 
             if (king_path_clear && rook_path_clear && !(squares_attacked(Side::Black) & king_path)) {
-                moves.emplace_back(MoveType::ksc, ksq, castle_rooks_from_[0], Piece::King);
+                if (XFEN) {
+                    moves.emplace_back(MoveType::ksc, ksq, castle_rooks_from_[0], Piece::King);
+                }
+                if (CFEN) {
+                    moves.emplace_back(MoveType::ksc, ksq, castle_king_to[0], Piece::King);
+                }
             }
         }
         if (!checked && can_castle(Side::White, MoveType::qsc)) {
@@ -222,7 +227,12 @@ void Position::legal_noncaptures(std::vector<Move> &moves) const noexcept {
             const auto rook_path_clear = (rook_path & blockers).empty() && !(rook_pinned & castle_rooks_from_[1]);
 
             if (king_path_clear && rook_path_clear && !(squares_attacked(Side::Black) & king_path)) {
-                moves.emplace_back(MoveType::qsc, ksq, castle_rooks_from_[1], Piece::King);
+                if (XFEN) {
+                    moves.emplace_back(MoveType::qsc, ksq, castle_rooks_from_[1], Piece::King);
+                }
+                if (CFEN) {
+                    moves.emplace_back(MoveType::qsc, ksq, castle_king_to[1], Piece::King);
+                }
             }
         }
     } else {
@@ -234,7 +244,12 @@ void Position::legal_noncaptures(std::vector<Move> &moves) const noexcept {
             const auto rook_path_clear = (rook_path & blockers).empty() && !(rook_pinned & castle_rooks_from_[2]);
 
             if (king_path_clear && rook_path_clear && !(squares_attacked(Side::White) & king_path)) {
-                moves.emplace_back(MoveType::ksc, ksq, castle_rooks_from_[2], Piece::King);
+                if (XFEN) {
+                    moves.emplace_back(MoveType::ksc, ksq, castle_rooks_from_[2], Piece::King);
+                }
+                if (CFEN) {
+                    moves.emplace_back(MoveType::ksc, ksq, castle_king_to[2], Piece::King);
+                }
             }
         }
         if (!checked && can_castle(Side::Black, MoveType::qsc)) {
@@ -245,7 +260,12 @@ void Position::legal_noncaptures(std::vector<Move> &moves) const noexcept {
             const auto rook_path_clear = (rook_path & blockers).empty() && !(rook_pinned & castle_rooks_from_[3]);
 
             if (king_path_clear && rook_path_clear && !(squares_attacked(Side::White) & king_path)) {
-                moves.emplace_back(MoveType::qsc, ksq, castle_rooks_from_[3], Piece::King);
+                if (XFEN) {
+                    moves.emplace_back(MoveType::qsc, ksq, castle_rooks_from_[3], Piece::King);
+                }
+                if (CFEN) {
+                    moves.emplace_back(MoveType::qsc, ksq, castle_king_to[3], Piece::King);
+                }
             }
         }
     }
